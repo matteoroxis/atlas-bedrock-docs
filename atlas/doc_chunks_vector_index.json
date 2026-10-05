@@ -1,0 +1,12 @@
+{
+  "name": "doc_chunks_vector_index",
+  "type": "vectorSearch",
+  "definition": {
+    "fields": [
+      { "type": "vector", "path": "embedding", "numDimensions": 1024, "similarity": "cosine" },
+      { "type": "filter", "path": "metadata.team" },
+      { "type": "filter", "path": "metadata.product" },
+      { "type": "filter", "path": "metadata.version" }
+    ]
+  }
+}

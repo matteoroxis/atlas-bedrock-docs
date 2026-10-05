@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: atlas-bedrock-docs
+
+  # ---------------------------------------------------------------
+  # Atlas owns the data: documents, chunks, vectors, metadata, index
+  # ---------------------------------------------------------------
+  mongodb:
+    uri: ${MONGODB_URI}
+    database: ${MONGODB_DATABASE:docs}
+
+  ai:
+    vectorstore:
+      mongodb:
+        collection-name: doc_chunks
+        index-name: doc_chunks_vector_index
+        path-name: embedding
+        metadata-fields-to-filter: team,product,version
+        # Convenient for the sample; in production create the index explicitly (see atlas/).
+        initialize-schema: ${DOCS_INIT_SCHEMA:true}
+
+    # ---------------------------------------------------------------
+    # Bedrock owns the model: embeddings and generation, nothing stored
+    # ---------------------------------------------------------------
+    model:
+      embedding: bedrock-titan
+      chat: bedrock-converse
+    bedrock:
+      aws:
+        # Credentials come from the default AWS provider chain (env, profile, IAM role).
+        region: ${AWS_REGION:eu-central-1}
+      titan:
+        embedding:
+          # Spring AI defaults to the image model and IMAGE input: both must be set for text.
+          model: amazon.titan-embed-text-v2:0
+          input-type: text
+      converse:
+        chat:
+          model: ${BEDROCK_CHAT_MODEL:eu.anthropic.claude-haiku-4-5-20251001-v1:0}
+          temperature: 0.2
+          max-tokens: 800
+
+docs:
+  seed: ${DOCS_SEED:false}

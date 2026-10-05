@@ -1,0 +1,50 @@
+[
+  {
+    "id": "platform-gateway-retries-2x",
+    "title": "Gateway 2.x: retry policy for upstream calls",
+    "team": "platform",
+    "product": "gateway",
+    "version": "2.x",
+    "body": "The gateway retries idempotent upstream calls (GET, PUT, DELETE) up to 3 times with exponential backoff starting at 200 ms and capped at 2 seconds. POST requests are never retried by the gateway unless the client sends an Idempotency-Key header. Retries are disabled for upstreams marked as streaming. The retry budget is shared per route: when more than 20 percent of requests in a 10 second window are retries, further retries are dropped."
+  },
+  {
+    "id": "platform-gateway-timeouts-2x",
+    "title": "Gateway 2.x: timeouts",
+    "team": "platform",
+    "product": "gateway",
+    "version": "2.x",
+    "body": "Each route has a connect timeout of 1 second and a response timeout of 15 seconds by default. Routes can override the response timeout up to 60 seconds through the route descriptor field responseTimeout. Timeouts count against the retry budget. Websocket routes ignore the response timeout and use an idle timeout of 5 minutes instead."
+  },
+  {
+    "id": "platform-gateway-retries-1x",
+    "title": "Gateway 1.x: retry policy for upstream calls",
+    "team": "platform",
+    "product": "gateway",
+    "version": "1.x",
+    "body": "Gateway 1.x retries every failed upstream call twice with a fixed delay of 500 ms, regardless of the HTTP method. There is no retry budget. This behaviour is deprecated and replaced in 2.x by method-aware retries with exponential backoff."
+  },
+  {
+    "id": "payments-ledger-retries-3x",
+    "title": "Ledger 3.x: retry policy for posting entries",
+    "team": "payments",
+    "product": "ledger",
+    "version": "3.x",
+    "body": "Ledger clients must not retry a posting on their own. Every posting carries a client-generated posting id, and the ledger deduplicates on that id for 24 hours. On a timeout the client calls the status endpoint with the posting id before deciding whether to submit again. Automatic retries are performed only by the outbox worker, at most 5 times, with a delay of 30 seconds between attempts."
+  },
+  {
+    "id": "payments-ledger-reconciliation-3x",
+    "title": "Ledger 3.x: daily reconciliation",
+    "team": "payments",
+    "product": "ledger",
+    "version": "3.x",
+    "body": "Reconciliation runs every day at 02:00 UTC and compares ledger balances with the settlement files received from the acquirers. Differences are written to the reconciliation_breaks collection with status OPEN. A break is closed only by an operator, who records the reason and the corrective posting id."
+  },
+  {
+    "id": "payments-ledger-timeouts-3x",
+    "title": "Ledger 3.x: client timeouts",
+    "team": "payments",
+    "product": "ledger",
+    "version": "3.x",
+    "body": "The ledger API answers within 2 seconds for 99 percent of postings. Clients should use a response timeout of 5 seconds. A timed-out posting is not a failed posting: its state must be read from the status endpoint before any further action."
+  }
+]
